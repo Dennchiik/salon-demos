@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Спа Мура · демо сайт</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a slow, guided spa. The page asks how you feel, builds a ritual as a timeline you can edit, books it, and turns it into a gift. One breathing circle sets the pace. */
+:root{
+  --bg:#EDF1E8;
+  --card:#F9FBF5;
+  --ink:#1D2A21;
+  --muted:#5B6B5F;
+  --line:#D2DDCD;
+  --sage:#3E6A4D;
+  --sage-soft:#D8E6D2;
+  --clay:#B5774E;
+  --on-sage:#FFFFFF;
+  --display:'Lora',Georgia,'Times New Roman',serif;
+  --body:'Nunito','Segoe UI',system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0F1611;--card:#172019;--ink:#E5EEE3;--muted:#9DB2A1;--line:#2A3A2E;--sage:#8DC59D;--sage-soft:#22342A;--clay:#E0A27A;--on-sage:#0E1A12;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1611;--card:#172019;--ink:#E5EEE3;--muted:#9DB2A1;--line:#2A3A2E;--sage:#8DC59D;--sage-soft:#22342A;--clay:#E0A27A;--on-sage:#0E1A12;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6}
+h1,h2,h3{font-family:var(--display);font-weight:500;margin:0;line-height:1.15;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--sage);outline-offset:3px;border-radius:8px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.muted{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;border:1px solid transparent;padding:13px 24px;font-weight:700;text-decoration:none}
+.btn-sage{background:var(--sage);color:var(--on-sage)}
+.btn-sage:hover{filter:brightness(1.08)}
+.btn-line{border-color:var(--line);background:transparent}
+.btn-line:hover{border-color:var(--ink)}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.kicker{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--sage)}
+
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 0}
+.logo{font-family:var(--display);font-size:24px;text-decoration:none;display:flex;align-items:center;gap:10px}
+.logo svg{width:26px;height:26px}
+header nav{display:flex;gap:24px;font-weight:600}
+header nav a{text-decoration:none;color:var(--muted)}
+header nav a:hover{color:var(--ink)}
+@media (max-width:760px){header nav{display:none}}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;padding:30px 0 70px}
+@media (max-width:860px){.hero{grid-template-columns:1fr}}
+.hero h1{font-size:clamp(42px,6vw,76px)}
+.hero h1 i{color:var(--sage)}
+.hero p.lead{font-size:19px;max-width:38ch;margin:20px 0 28px;color:var(--muted)}
+.breath{position:relative;aspect-ratio:1;max-width:420px;width:100%;margin:0 auto;display:grid;place-items:center}
+.breath .ring{position:absolute;inset:0;border-radius:50%;border:1px solid var(--line)}
+.breath .ring:nth-child(2){inset:12%}
+.breath .ring:nth-child(3){inset:24%}
+.breath .orb{width:46%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--sage-soft),var(--sage) 75%);animation:breathe 10s ease-in-out infinite;display:grid;place-items:center;color:var(--on-sage);font-family:var(--display);font-size:20px;font-style:italic}
+@keyframes breathe{0%,100%{transform:scale(.8)}45%,55%{transform:scale(1.32)}}
+.breath small{position:absolute;bottom:2%;font-size:13px;color:var(--muted)}
+
+section.block{padding:70px 0;border-top:1px solid var(--line)}
+.head{max-width:620px;margin-bottom:32px}
+.head h2{font-size:clamp(30px,4vw,46px);margin-top:8px}
+.head p{color:var(--muted);margin-top:12px}
+
+/* moods */
+.moods{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:34px}
+@media (max-width:760px){.moods{grid-template-columns:1fr}}
+.mood{text-align:left;border:1px solid var(--line);background:var(--card);border-radius:26px;padding:22px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden}
+.mood:hover{border-color:var(--muted)}
+.mood[aria-pressed="true"]{border-color:var(--sage);box-shadow:inset 0 0 0 1px var(--sage)}
+.mood .ico{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--sage-soft)}
+.mood .ico svg{width:24px;height:24px;stroke:var(--sage);fill:none;stroke-width:1.6}
+.mood h3{font-size:24px}
+.mood p{color:var(--muted);font-size:15px}
+
+.builder{display:grid;grid-template-columns:1.25fr 1fr;gap:28px;align-items:start}
+@media (max-width:900px){.builder{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:28px;padding:26px}
+.panel h3{font-size:24px;margin-bottom:4px}
+.timeline{list-style:none;margin:20px 0 0;padding:0;position:relative}
+.timeline::before{content:"";position:absolute;left:19px;top:10px;bottom:10px;width:2px;background:var(--line)}
+.step{display:grid;grid-template-columns:40px 1fr auto;gap:14px;align-items:center;padding:10px 0;position:relative}
+.step .dot{width:40px;height:40px;border-radius:50%;background:var(--sage);color:var(--on-sage);display:grid;place-items:center;font-weight:700;font-size:14px;position:relative;z-index:1}
+.step.free .dot{background:var(--clay)}
+.step b{display:block}
+.step small{color:var(--muted);font-size:13px}
+.step .clock{font-variant-numeric:tabular-nums;color:var(--sage);font-weight:700;font-size:13px}
+.step .rm{border:1px solid var(--line);background:transparent;border-radius:999px;width:32px;height:32px;font-size:16px;color:var(--muted)}
+.step .rm:hover{border-color:var(--ink);color:var(--ink)}
+.addons{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.addon{border:1px dashed var(--muted);background:transparent;border-radius:999px;padding:8px 14px;font-size:14px;font-weight:600}
+.addon:hover{border-style:solid;border-color:var(--sage);color:var(--sage)}
+.toggle{display:flex;align-items:center;gap:12px;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.switch{width:48px;height:28px;border-radius:999px;background:var(--line);border:0;position:relative;flex:none}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:var(--card);transition:left .2s}
+.switch[aria-checked="true"]{background:var(--sage)}
+.switch[aria-checked="true"]::after{left:23px}
+.totals{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:6px 0 18px}
+.totals div{background:var(--bg);border-radius:18px;padding:14px 16px}
+.totals span{font-size:13px;color:var(--muted);font-weight:600}
+.totals b{display:block;font-family:var(--display);font-size:30px;font-weight:500;font-variant-numeric:tabular-nums}
+.totals s{color:var(--muted);font-size:14px;margin-left:6px}
+.days{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin:8px 0 14px}
+.day{flex:none;width:64px;border:1px solid var(--line);background:transparent;border-radius:18px;padding:8px 4px;text-align:center;font-size:12px}
+.day b{display:block;font-family:var(--display);font-size:22px;font-weight:500}
+.day[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.times{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;margin-bottom:16px}
+.time{border:1px solid var(--line);background:transparent;border-radius:12px;padding:9px 0;font-weight:700;font-variant-numeric:tabular-nums;font-size:14px}
+.time:hover:not([disabled]){border-color:var(--sage)}
+.time[disabled]{opacity:.35;cursor:not-allowed;text-decoration:line-through}
+.time[aria-pressed="true"]{background:var(--sage);color:var(--on-sage);border-color:var(--sage)}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.field label{font-weight:700;font-size:14px}
+.field input,.field textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:11px 14px}
+.field textarea{min-height:70px;resize:vertical}
+.err{color:#B3261E;font-size:13px;font-weight:700}
+.done{text-align:center;padding:10px 0}
+.done h3{font-size:30px;margin:12px 0 6px}
+.code{display:inline-block;background:var(--sage-soft);border-radius:12px;padding:6px 16px;font-weight:700;letter-spacing:.12em;margin:10px 0}
+
+/* space */
+.zones{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media (max-width:860px){.zones{grid-template-columns:1fr}}
+.zone{border-radius:28px;overflow:hidden;background:var(--card);border:1px solid var(--line)}
+.zone .art{height:190px}
+.zone div.txt{padding:20px}
+.zone h3{font-size:22px;margin-bottom:6px}
+.zone p{color:var(--muted);font-size:15px}
+
+/* voucher */
+.gift{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+@media (max-width:900px){.gift{grid-template-columns:1fr}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:9px 16px;font-weight:700}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.colors{display:flex;gap:10px;margin-bottom:16px}
+.colors button{width:36px;height:36px;border-radius:50%;border:2px solid transparent}
+.colors button[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 3px var(--card)}
+.voucher{aspect-ratio:1.6;border-radius:26px;padding:28px;color:#fff;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;box-shadow:0 30px 60px -36px rgba(20,40,25,.6)}
+.voucher::after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;border:1px solid rgba(255,255,255,.35)}
+.voucher .v-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.voucher .v-brand{font-family:var(--display);font-size:24px}
+.voucher .v-amount{font-family:var(--display);font-size:clamp(36px,5vw,54px);line-height:1}
+.voucher .v-msg{font-family:var(--display);font-style:italic;font-size:17px;max-width:30ch;overflow-wrap:anywhere}
+.voucher .v-meta{display:flex;justify-content:space-between;gap:10px;font-size:13px;opacity:.92;flex-wrap:wrap}
+
+.info{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media (max-width:760px){.info{grid-template-columns:1fr}}
+.info h3{font-size:20px;margin-bottom:8px}
+footer{border-top:1px solid var(--line);padding:24px 0 48px;color:var(--muted);font-size:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <a class="logo" href="#top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21C6 17 4 12 6 6c4 0 7 2 6 8 1-6 4-9 7-9 1 7-2 12-7 16z" fill="var(--sage)"/></svg>Мура</a>
+  <nav><a href="#ritual">Ритуал</a><a href="#space">Пространството</a><a href="#gift">Ваучери</a><a href="#info">Как да дойдеш</a></nav>
+  <a class="btn btn-sage" href="#ritual" style="padding:10px 18px">Запази ритуал</a>
+</header>
+
+<section class="hero" id="top">
+  <div>
+    <span class="kicker">Спа · Лозенец, София</span>
+    <h1 style="margin-top:14px">Два часа, в които <i>никой не те търси.</i></h1>
+    <p class="lead">Не избираш от дълъг списък. Казваш ни как се чувстваш, а ние подреждаме процедурите в ритуал с ясно време и цена.</p>
+    <a class="btn btn-sage" href="#ritual">Как се чувстваш днес?</a>
+  </div>
+  <div class="breath" aria-hidden="true">
+    <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+    <div class="orb" id="orb">вдишай</div>
+    <small>Дишай с кръга, докато решаваш</small>
+  </div>
+</section>
+</div>
+
+<section class="block" id="ritual">
+  <div class="wrap">
+    <div class="head">
+      <span class="kicker">Стъпка 1 · Настроение</span>
+      <h2>Как се чувстваш днес?</h2>
+      <p>Избери едно. Ритуалът се подрежда сам и можеш да махаш или добавяш процедури. При три или повече платени процедури цената пада с 10%.</p>
+    </div>
+    <div class="moods" id="moods"></div>
+    <div class="builder">
+      <div class="panel">
+        <span class="kicker">Стъпка 2 · Твоят ритуал</span>
+        <h3 id="ritName"></h3>
+        <p class="muted" id="ritDesc" style="font-size:15px"></p>
+        <ol class="timeline" id="steps"></ol>
+        <div style="margin-top:14px;font-weight:700;font-size:14px">Добави към ритуала</div>
+        <div class="addons" id="addons"></div>
+        <div class="toggle">
+          <button class="switch" id="couple" role="switch" aria-checked="false" aria-labelledby="coupleLbl"></button>
+          <div><b id="coupleLbl">Ритуал за двама</b><div class="muted" style="font-size:14px">В двойната стая, едновременно с двама терапевти</div></div>
+        </div>
+      </div>
+      <div class="panel" id="bookPanel"></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="space">
+  <div class="wrap">
+    <div class="head"><span class="kicker">Пространството</span><h2>Три стаи и една чайна</h2></div>
+    <div class="zones">
+      <article class="zone"><div class="art" style="background:radial-gradient(circle at 30% 80%,#E9B98F 0 18%,transparent 19%),linear-gradient(170deg,#7A4E33,#C68E63)"></div><div class="txt"><h3>Сауна и солна стая</h3><p>Финландска сауна на 80 °C и стая с хималайска сол за дишане. Започваш оттук, за да се отпусне тялото.</p></div></article>
+      <article class="zone"><div class="art" style="background:radial-gradient(ellipse at 50% 120%,#D8E6D2 0 40%,transparent 41%),linear-gradient(180deg,#2F4E3A,#5E8A6B)"></div><div class="txt"><h3>Стаи за терапия</h3><p>Две единични стаи и една двойна. Затъмнени, с топла кушетка и музика, която избираш ти.</p></div></article>
+      <article class="zone"><div class="art" style="background:radial-gradient(circle at 70% 40%,#F3E2C4 0 14%,transparent 15%),linear-gradient(160deg,#8C6A3F,#D7B98A)"></div><div class="txt"><h3>Чайната</h3><p>Всеки ритуал завършва тук с чай от мурсалско биле от Родопите. Без телефон, ако можеш.</p></div></article>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="gift">
+  <div class="wrap">
+    <div class="head"><span class="kicker">Ваучери</span><h2>Подари два часа тишина</h2><p>Сглоби ваучера и виж как ще изглежда. Плаща се и се получава на рецепция или с куриер, а важи 6 месеца.</p></div>
+    <div class="gift">
+      <div class="panel" id="giftForm"></div>
+      <div>
+        <div class="voucher" id="voucher" aria-live="polite"></div>
+        <p class="muted" style="font-size:14px;margin-top:12px">Ваучерът се отпечатва на картон с релефно лого и се дава в плик.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="info">
+  <div class="wrap info">
+    <div><h3>Адрес</h3><p>ул. „Крум Попов“ 40, Лозенец<br>София 1164</p><p class="muted" style="margin-top:6px">Два безплатни паркоместа в двора.</p></div>
+    <div><h3>Работно време</h3><p>Всеки ден, 10:00 – 22:00</p><p class="muted" style="margin-top:6px">Последен ритуал започва в 20:00.</p></div>
+    <div><h3>Връзка</h3><p><a href="tel:+359887555210">+359 88 755 5210</a></p><p>Instagram: @mura.spa</p></div>
+  </div>
+  <div class="wrap"><footer><span>© Спа Мура</span><span>Демо сайт за портфолио. Спа центърът и цените са измислени.</span></footer></div>
+</section>
+
+<script>
+const $=s=>document.querySelector(s);
+function el(tag,attrs,...kids){const e=document.createElement(tag);for(const k in attrs||{}){const v=attrs[k];if(k==="class")e.className=v;else if(k==="text")e.textContent=v;else if(k==="html")e.innerHTML=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else if(v!==false&&v!=null)e.setAttribute(k,v===true?"":v)}for(const c of kids)if(c!=null)e.append(c);return e}
+const pad=n=>String(n).padStart(2,"0"),keyOf=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const parseKey=k=>{const[y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d)};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const hm=m=>pad(Math.floor(m/60))+":"+pad(m%60);
+const fmt=(d,o)=>new Intl.DateTimeFormat("bg-BG",o).format(d);
+function hashStr(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let x=Math.imul(seed^seed>>>15,1|seed);x=x+Math.imul(x^x>>>7,61|x)^x;return((x^x>>>14)>>>0)/4294967296}}
+let store=[];try{store=JSON.parse(localStorage.getItem("mura-rituals-v2")||"[]")}catch(e){}
+const save=()=>{try{localStorage.setItem("mura-rituals-v2",JSON.stringify(store))}catch(e){}};
+
+/* breathing label synced to the 10s cycle */
+(()=>{const o=$("#orb");if(matchMedia("(prefers-reduced-motion: reduce)").matches){o.textContent="дишай";return}
+  o.addEventListener("animationiteration",()=>{});let t0=performance.now();
+  setInterval(()=>{const p=((performance.now()-t0)%10000)/10000;o.textContent=p<.45?"вдишай":p<.55?"задръж":"издишай"},250)})();
+
+const STEPS={
+ sauna:{n:"Финландска сауна",d:20,p:10},salt:{n:"Солна стая",d:20,p:12},
+ relax:{n:"Релаксиращ масаж",d:60,p:45},deep:{n:"Дълбокотъканен масаж",d:60,p:55},stones:{n:"Масаж с топли камъни",d:75,p:60},
+ scrub:{n:"Пилинг с розова сол",d:30,p:30},face:{n:"Хидратираща терапия за лице",d:45,p:40},clay:{n:"Обвиване с родопска глина",d:40,p:38},
+ feet:{n:"Масаж на стъпала",d:30,p:25},tea:{n:"Чай от мурсалско биле",d:15,p:0}
+};
+const ICON={
+ relax:'<svg viewBox="0 0 24 24"><path d="M3 15c3 0 3-2 6-2s3 2 6 2 3-2 6-2"/><path d="M3 19c3 0 3-2 6-2s3 2 6 2 3-2 6-2"/><circle cx="12" cy="7" r="3"/></svg>',
+ recover:'<svg viewBox="0 0 24 24"><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10z"/></svg>',
+ glow:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>'};
+const MOODS=[
+ {id:"relax",n:"Уморен/а съм",r:"Ритуал „Тишина“",d:"За глава, която не спира. Топлина, бавен масаж и нищо за мислене.",steps:["sauna","stones","tea"]},
+ {id:"recover",n:"Схванат/а съм",r:"Ритуал „Възстановяване“",d:"След тренировка или седмица на бюро. Работим по мускулите, а не само по настроението.",steps:["salt","deep","feet","tea"]},
+ {id:"glow",n:"Искам да сияя",r:"Ритуал „Сияние“",d:"Преди събитие или просто защото е зима. Кожата излиза мека и свежа.",steps:["scrub","clay","face","tea"]}
+];
+const R={mood:"relax",steps:[...MOODS[0].steps],couple:false,date:null,time:null,name:"",phone:"",note:"",err:{},done:null};
+
+function calc(){const paid=R.steps.filter(s=>STEPS[s].p>0);const dur=R.steps.reduce((a,s)=>a+STEPS[s].d,0)+Math.max(0,R.steps.length-1)*5;
+  const base=R.steps.reduce((a,s)=>a+STEPS[s].p,0)*(R.couple?2:1);const disc=paid.length>=3?Math.round(base*.1):0;return{dur,base,price:base-disc,disc}}
+
+/* rooms: A,B single, C double. Seeded occupancy */
+const cache={};
+function busy(room,key){const ck=room+key;if(cache[ck])return cache[ck];const r=rng(hashStr("mura"+ck)),out=[];let x=600;
+  while(x<1320){if(r()<.26){const d=[60,90,120,150][Math.floor(r()*4)];out.push([x,x+d+15]);x+=d+15}else x+=30}
+  return cache[ck]=out}
+function roomFree(room,key,start,dur){const end=start+dur+15;const own=store.filter(b=>b.room===room&&b.date===key).map(b=>[b.time,b.time+b.dur+15]);
+  return!busy(room,key).concat(own).some(([a,b])=>start<b&&a<end)}
+function findRoom(key,start,dur){if(start+dur>1320||start>1200)return null;
+  if(key===keyOf(new Date())){const n=new Date();if(start<n.getHours()*60+n.getMinutes()+90)return null}
+  const rooms=R.couple?["C"]:["A","B","C"];return rooms.find(r=>roomFree(r,key,start,dur))||null}
+
+function renderMoods(){const box=$("#moods");box.replaceChildren();
+  MOODS.forEach(m=>box.append(el("button",{class:"mood","aria-pressed":String(R.mood===m.id),onclick:()=>{R.mood=m.id;R.steps=[...m.steps];R.time=null;renderAll()}},
+    el("span",{class:"ico",html:ICON[m.id]}),el("h3",{text:m.n}),el("p",{text:m.r+". "+m.d}))))}
+
+function renderRitual(){const m=MOODS.find(x=>x.id===R.mood);$("#ritName").textContent=m.r;$("#ritDesc").textContent=m.d;
+  const ol=$("#steps");ol.replaceChildren();let clock=R.time;
+  R.steps.forEach((s,i)=>{const st=STEPS[s];const free=st.p===0;
+    ol.append(el("li",{class:"step"+(free?" free":"")},el("span",{class:"dot",text:String(i+1)}),
+      el("div",{},el("b",{text:st.n}),el("small",{text:st.d+" мин · "+(free?"подарък":(st.p*(R.couple?2:1))+" €")}),clock!=null?el("div",{class:"clock",text:hm(clock)+" – "+hm(clock+st.d)}):null),
+      R.steps.length>1?el("button",{class:"rm","aria-label":"Махни "+st.n,text:"×",onclick:()=>{R.steps.splice(i,1);R.time=null;renderAll()}}):el("span")));
+    if(clock!=null)clock+=st.d+5});
+  const add=$("#addons");add.replaceChildren();
+  Object.keys(STEPS).filter(k=>!R.steps.includes(k)).forEach(k=>add.append(el("button",{class:"addon",text:"+ "+STEPS[k].n+" · "+STEPS[k].d+" мин",onclick:()=>{const ti=R.steps.indexOf("tea");if(ti>=0&&k!=="tea")R.steps.splice(ti,0,k);else R.steps.push(k);R.time=null;renderAll()}})));
+  $("#couple").setAttribute("aria-checked",String(R.couple))}
+$("#couple").addEventListener("click",()=>{R.couple=!R.couple;R.time=null;renderAll()});
+
+function renderBook(){const p=$("#bookPanel");p.replaceChildren();const c=calc();
+  if(R.done){const r=R.done;p.append(el("div",{class:"done"},el("span",{class:"kicker",text:"Запазено"}),el("h3",{text:"Очакваме те"}),
+    el("p",{text:fmt(parseKey(r.date),{weekday:"long",day:"numeric",month:"long"})+", "+hm(r.time)+" – "+hm(r.time+r.dur)}),
+    el("p",{class:"muted",text:r.steps.length+" процедури · "+r.price+" €"+(r.couple?" · за двама":"")}),
+    el("div",{class:"code",text:"МУРА-"+r.id}),
+    el("p",{class:"muted",style:"font-size:14px;max-width:36ch;margin:6px auto 16px",text:"Ела 10 минути по-рано. Халат, кърпи и чехли са при нас. Плащаш на място."}),
+    el("button",{class:"btn btn-line",text:"Сглоби нов ритуал",onclick:()=>{R.done=null;R.time=null;renderAll()}})));return}
+  p.append(el("span",{class:"kicker",text:"Стъпка 3 · Кога"}),el("h3",{text:"Избери ден и начален час"}));
+  p.append(el("div",{class:"totals"},el("div",{},el("span",{text:"Продължителност"}),el("b",{text:Math.floor(c.dur/60)+" ч "+pad(c.dur%60)+" мин"})),
+    el("div",{},el("span",{text:c.disc?"Цена с отстъпка за ритуал":"Цена"}),el("b",{},document.createTextNode(c.price+" €"),c.disc?el("s",{text:c.base+" €"}):null))));
+  const days=el("div",{class:"days",role:"group","aria-label":"Ден"});const keys=[];for(let i=0;i<14;i++)keys.push(keyOf(addDays(new Date(),i)));
+  const hasFree=k=>{for(let t=600;t<=1200;t+=30)if(findRoom(k,t,c.dur))return true;return false};
+  if(!R.date||!keys.includes(R.date))R.date=keys.find(hasFree)||keys[0];
+  keys.forEach((k,i)=>{const d=parseKey(k);days.append(el("button",{class:"day","aria-pressed":String(k===R.date),onclick:()=>{R.date=k;R.time=null;renderAll()}},
+    el("span",{text:i===0?"днес":i===1?"утре":fmt(d,{weekday:"short"})}),el("b",{text:String(d.getDate())}),el("span",{text:fmt(d,{month:"short"})})))});
+  p.append(days);
+  const times=el("div",{class:"times"});let any=false;
+  for(let t=600;t<=1200;t+=30){const ok=!!findRoom(R.date,t,c.dur);if(ok)any=true;
+    times.append(el("button",{class:"time",disabled:!ok,"aria-pressed":String(R.time===t),text:hm(t),onclick:()=>{R.time=t;renderAll()}}))}
+  p.append(any?times:el("p",{class:"muted",style:"margin-bottom:16px",text:"В този ден няма свободна стая за целия ритуал. Опитай друг ден или по-кратък ритуал."}));
+  if(R.time!=null){
+    const f=(id,lab,inp,err)=>el("div",{class:"field"},el("label",{for:id,text:lab}),inp,err?el("span",{class:"err",text:err}):null);
+    p.append(f("rName","Име",el("input",{id:"rName",autocomplete:"name",value:R.name,oninput:e=>R.name=e.target.value}),R.err.name),
+      f("rPhone","Телефон",el("input",{id:"rPhone",type:"tel",inputmode:"tel",placeholder:"0888 123 456",value:R.phone,oninput:e=>R.phone=e.target.value}),R.err.phone),
+      f("rNote","Нещо, което терапевтът трябва да знае",(()=>{const t=el("textarea",{id:"rNote",placeholder:"Бременност, травми, алергии, предпочитан натиск",oninput:e=>R.note=e.target.value});t.value=R.note;return t})()));
+    p.append(el("button",{class:"btn btn-sage",style:"width:100%;justify-content:center",text:"Запази ритуала за "+hm(R.time),onclick:confirm}));
+  }else p.append(el("p",{class:"muted",style:"font-size:14px",text:"Часовете във времевата линия вляво ще се подредят, щом избереш начало."}))}
+
+function confirm(){const e={};if(R.name.trim().length<2)e.name="Въведи име.";
+  if(!/^(\+359\d{8,9}|0\d{8,9})$/.test(R.phone.replace(/[^\d+]/g,"")))e.phone="Въведи български номер, напр. 0888 123 456.";
+  R.err=e;if(Object.keys(e).length){renderBook();return}
+  const c=calc();const room=findRoom(R.date,R.time,c.dur);if(!room){R.time=null;renderAll();return}
+  const rec={id:String(Math.floor(100+Math.random()*900)),date:R.date,time:R.time,dur:c.dur,price:c.price,steps:[...R.steps],couple:R.couple,room,name:R.name.trim(),phone:R.phone.trim()};
+  store.push(rec);save();R.done=rec;renderAll()}
+
+/* voucher */
+const G={kind:50,to:"Мария",from:"Иван",msg:"За всички понеделници тази година.",color:0,sent:null};
+const PALET=["linear-gradient(140deg,#2F4E3A,#5E8A6B)","linear-gradient(140deg,#7A4E33,#C68E63)","linear-gradient(140deg,#1D2A21,#4A5D50)"];
+function renderGift(){const f=$("#giftForm");f.replaceChildren();
+  if(G.sent){f.append(el("div",{class:"done"},el("span",{class:"kicker",text:"Заявката е приета"}),el("h3",{text:"Ваучерът се подготвя"}),
+    el("p",{class:"muted",text:"Ще ти се обадим до 2 часа, за да уточним плащане и доставка."}),el("div",{class:"code",text:G.sent}),
+    el("div",{style:"display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px"},
+      el("button",{class:"btn btn-line",text:"Копирай кода",onclick:async e=>{try{await navigator.clipboard.writeText(G.sent);e.target.textContent="Копирано"}catch(err){e.target.textContent="Копирането не е позволено"}}}),
+      el("button",{class:"btn btn-line",text:"Нов ваучер",onclick:()=>{G.sent=null;renderGift()}}))));renderVoucher();return}
+  f.append(el("div",{style:"font-weight:700;margin-bottom:8px",text:"Стойност"}));
+  const chips=el("div",{class:"chips"});[30,50,80,120,"ritual"].forEach(v=>chips.append(el("button",{class:"chip","aria-pressed":String(G.kind===v),text:v==="ritual"?"Ритуалът, който сглоби":v+" €",onclick:()=>{G.kind=v;renderGift()}})));f.append(chips);
+  const inp=(id,lab,val,key,max,ta)=>{const i=ta?el("textarea",{id,maxlength:max,oninput:e=>{G[key]=e.target.value;renderVoucher();cnt.textContent=e.target.value.length+"/"+max}}):el("input",{id,maxlength:max,value:val,oninput:e=>{G[key]=e.target.value;renderVoucher()}});if(ta)i.value=val;
+    const cnt=el("small",{class:"muted",text:ta?val.length+"/"+max:""});return el("div",{class:"field"},el("label",{for:id,text:lab}),i,ta?cnt:null)};
+  f.append(inp("gTo","За кого",G.to,"to",24),inp("gFrom","От кого",G.from,"from",24),inp("gMsg","Пожелание",G.msg,"msg",90,true));
+  f.append(el("div",{style:"font-weight:700;margin-bottom:8px",text:"Цвят на картата"}));
+  const cols=el("div",{class:"colors"});PALET.forEach((g,i)=>{const b=el("button",{"aria-label":"Цвят "+(i+1),"aria-pressed":String(G.color===i),onclick:()=>{G.color=i;renderGift()}});b.style.background=g;cols.append(b)});f.append(cols);
+  f.append(el("button",{class:"btn btn-sage",style:"width:100%;justify-content:center",text:"Заяви ваучера",onclick:()=>{G.sent="GIFT-"+Math.random().toString(36).slice(2,7).toUpperCase();renderGift()}}));
+  f.append(el("p",{class:"muted",style:"font-size:13px;margin-top:10px",text:"Не плащаш онлайн. Обаждаме се, за да потвърдим."}));
+  renderVoucher()}
+function renderVoucher(){const v=$("#voucher");v.style.background=PALET[G.color];v.replaceChildren();
+  const amount=G.kind==="ritual"?calc().price+" €":G.kind+" €";const sub=G.kind==="ritual"?MOODS.find(m=>m.id===R.mood).r:"за ритуал по избор";
+  const valid=fmt(addDays(new Date(),183),{day:"numeric",month:"long",year:"numeric"});
+  v.append(el("div",{class:"v-top"},el("span",{class:"v-brand",text:"Мура"}),el("span",{style:"font-size:13px;opacity:.9",text:"Подаръчен ваучер"})),
+    el("div",{},el("div",{class:"v-amount",text:amount}),el("div",{style:"opacity:.9;margin-top:4px",text:sub})),
+    el("div",{class:"v-msg",text:G.msg?"„"+G.msg+"“":""}),
+    el("div",{class:"v-meta"},el("span",{text:"За: "+(G.to||"…")+" · От: "+(G.from||"…")}),el("span",{text:"Валиден до "+valid})))}
+
+function renderAll(){renderMoods();renderRitual();renderBook();renderVoucher()}
+renderAll();renderGift();
+</script>
+</body>
+</html>

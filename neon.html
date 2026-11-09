@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Неон нейл бар · демо сайт</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: the website is a phone app. On desktop a pitch column sits beside a live phone; on mobile the app fills the screen. Clients book a specific nail design, not a service. */
+:root{
+  --bg:#1A0B33;
+  --app:#FFF5FB;
+  --card:#FFFFFF;
+  --ink:#1A0B33;
+  --muted:#6A5A86;
+  --line:#EBD8F3;
+  --pink:#FF2E93;
+  --yellow:#FFD23F;
+  --mint:#2ED3A0;
+  --soft:#FFE0F0;
+  --display:'Rubik Mono One','Arial Black',system-ui,sans-serif;
+  --body:'Rubik','Segoe UI',system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--app:#120826;--card:#1D1036;--ink:#FBF0FF;--muted:#B6A5D4;--line:#33225A;--soft:#3A1640;color-scheme:dark}}
+:root[data-theme="dark"]{--app:#120826;--card:#1D1036;--ink:#FBF0FF;--muted:#B6A5D4;--line:#33225A;--soft:#3A1640;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--pink);outline-offset:2px;border-radius:8px}
+h1,h2,h3{margin:0;line-height:1.1}
+p{margin:0}
+.stage{height:100%;display:grid;grid-template-columns:1fr auto;gap:56px;align-items:center;max-width:1180px;margin:0 auto;padding:24px 32px}
+.pitch{color:#FBF0FF}
+.pitch .tag{display:inline-block;background:var(--yellow);color:#1A0B33;font-weight:700;border-radius:999px;padding:6px 14px;font-size:13px}
+.pitch h1{font-family:var(--display);font-weight:400;font-size:clamp(40px,5.4vw,76px);letter-spacing:-.03em;margin:20px 0;text-transform:uppercase}
+.pitch h1 span{color:var(--pink)}
+.pitch p{font-size:18px;max-width:40ch;color:#D8C9F0}
+.pitch ul{list-style:none;padding:0;margin:28px 0 0;display:flex;flex-direction:column;gap:12px}
+.pitch li{display:flex;gap:12px;align-items:center;font-weight:600}
+.pitch li b{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#2A1650;color:var(--yellow);font-size:13px;flex:none}
+.pitch .note{margin-top:30px;font-size:13px;color:#9C8CBC}
+.phone{width:390px;height:min(800px,calc(100vh - 48px));border-radius:46px;background:#000;padding:10px;box-shadow:0 40px 90px -30px rgba(255,46,147,.45),0 0 0 2px #3A2466}
+.screen{height:100%;border-radius:38px;overflow:hidden;background:var(--app);position:relative;display:flex;flex-direction:column}
+@media (max-width:900px){
+  .stage{display:block;padding:0;height:100%}
+  .pitch{display:none}
+  .phone{width:100%;height:100%;border-radius:0;padding:0;box-shadow:none}
+  .screen{border-radius:0}
+}
+.bar{display:flex;justify-content:space-between;align-items:center;padding:16px 20px 10px}
+.brand{font-family:var(--display);font-size:20px;letter-spacing:-.02em}
+.brand i{font-style:normal;color:var(--pink)}
+.loc{font-size:12px;color:var(--muted);font-weight:600;text-align:right}
+.view{flex:1;overflow-y:auto;padding:4px 18px 24px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);background:var(--card);padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
+.tabs button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--muted);padding:6px 0;border-radius:12px}
+.tabs button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8}
+.tabs button[aria-current="page"]{color:var(--pink)}
+.tabs .badge{position:absolute;margin:-2px 0 0 18px;background:var(--pink);color:#fff;border-radius:999px;font-size:10px;padding:0 5px}
+.h{font-family:var(--display);font-weight:400;font-size:18px;letter-spacing:-.02em;text-transform:uppercase;margin:22px 0 12px}
+.live{background:var(--ink);color:var(--app);border-radius:24px;padding:18px;position:relative;overflow:hidden}
+.live::after{content:"";position:absolute;right:-40px;top:-40px;width:150px;height:150px;border-radius:50%;background:var(--pink);opacity:.5;filter:blur(10px)}
+.live .row{display:flex;justify-content:space-between;align-items:center;gap:10px;position:relative;z-index:1}
+.pulse{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.pulse::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 4px rgba(46,211,160,.25)}
+.live.closed .pulse::before{background:#999;box-shadow:none}
+.live .big{font-family:var(--display);font-size:30px;margin:10px 0 2px;position:relative;z-index:1}
+.live p{position:relative;z-index:1;opacity:.8;font-size:14px}
+.go{background:var(--pink);color:#fff;border-radius:999px;padding:11px 18px;font-weight:700;font-size:14px;position:relative;z-index:1}
+.go.y{background:var(--yellow);color:#1A0B33}
+.go[disabled]{opacity:.4;cursor:not-allowed}
+.stories{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 6px;margin:18px -2px 0}
+.story{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;width:66px;font-size:11px;font-weight:600}
+.story span.ring{width:62px;height:62px;border-radius:50%;padding:3px;background:conic-gradient(var(--pink),var(--yellow),var(--mint),var(--pink))}
+.story span.ring i{display:block;width:100%;height:100%;border-radius:50%;border:3px solid var(--app)}
+.story.seen span.ring{background:var(--line)}
+.hscroll{display:flex;gap:12px;overflow-x:auto;margin:0 -18px;padding:0 18px 6px}
+.dcard{flex:none;width:150px;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid .dcard{width:auto}
+.hand{height:92px;border-radius:14px;background:var(--soft);display:flex;align-items:flex-end;justify-content:center;gap:5px;padding:0 10px 10px;position:relative}
+.hand i{display:block;width:16%;border-radius:50% 50% 35% 35%/42% 42% 22% 22%;box-shadow:inset 0 -6px 8px rgba(0,0,0,.12),inset 2px 4px 4px rgba(255,255,255,.35)}
+.hand.lg{height:170px;gap:9px}
+.dcard b{display:block;margin-top:8px;font-size:14px}
+.dcard small{color:var(--muted);font-size:12px}
+.heart{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-size:15px;color:var(--muted)}
+.heart[aria-pressed="true"]{color:var(--pink)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin:0 -18px;padding-left:18px;padding-right:18px}
+.chip{flex:none;border:1.5px solid var(--ink);border-radius:999px;padding:7px 14px;font-weight:600;font-size:13px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--app)}
+.sheet-bg{position:absolute;inset:0;background:rgba(10,4,20,.5);z-index:20;display:flex;align-items:flex-end}
+.sheet-bg[hidden]{display:none}
+.sheet{background:var(--app);width:100%;border-radius:28px 28px 0 0;padding:14px 18px 22px;max-height:88%;overflow:auto}
+.sheet .grab{width:40px;height:5px;border-radius:5px;background:var(--line);margin:0 auto 12px}
+.sheet h3{font-family:var(--display);font-weight:400;font-size:20px;text-transform:uppercase;margin:16px 0 6px}
+.facts{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px}
+.facts span{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600}
+.story-view{position:absolute;inset:0;z-index:30;color:#fff;display:flex;flex-direction:column;padding:16px 20px}
+.story-view[hidden]{display:none}
+.prog{display:flex;gap:4px}
+.prog i{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.35);overflow:hidden}
+.prog i b{display:block;height:100%;width:0;background:#fff}
+.prog i.done b{width:100%}
+.prog i.run b{animation:fill 4s linear forwards}
+@keyframes fill{to{width:100%}}
+.story-view h2{font-family:var(--display);font-weight:400;font-size:34px;text-transform:uppercase;margin-top:auto}
+.story-view p{font-size:17px;margin:12px 0 28px;max-width:28ch}
+.picked{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px}
+.picked .hand{width:96px;height:64px;flex:none;padding-bottom:6px}
+.picked .grow{flex:1}
+.opt{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:8px}
+.opt[aria-pressed="true"]{border-color:var(--pink)}
+.opt small{display:block;color:var(--muted);font-size:12px}
+.pros{display:flex;gap:10px;overflow-x:auto;margin:0 -18px;padding:0 18px 4px}
+.pro{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;width:68px;font-size:12px;font-weight:600;padding:6px 0;border-radius:16px;border:1.5px solid transparent}
+.pro[aria-pressed="true"]{border-color:var(--pink);background:var(--card)}
+.pro i{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:700;color:#fff}
+.dstrip{display:flex;gap:8px;overflow-x:auto;margin:0 -18px;padding:0 18px 4px}
+.dpill{flex:none;width:54px;border-radius:16px;padding:8px 0;text-align:center;font-size:11px;font-weight:600;background:var(--card);border:1.5px solid var(--line)}
+.dpill b{display:block;font-size:18px}
+.dpill[aria-pressed="true"]{background:var(--ink);color:var(--app);border-color:var(--ink)}
+.times{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.time{border-radius:12px;padding:10px 0;font-weight:700;background:var(--card);border:1.5px solid var(--line);font-variant-numeric:tabular-nums;font-size:14px}
+.time[disabled]{opacity:.3;cursor:not-allowed}
+.time[aria-pressed="true"]{background:var(--pink);color:#fff;border-color:var(--pink)}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.field label{font-size:13px;font-weight:700}
+.field input{font:inherit;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:11px 12px}
+.err{color:#D11A5C;font-size:12px;font-weight:700}
+.total{display:flex;justify-content:space-between;align-items:center;margin:14px 0}
+.total b{font-family:var(--display);font-size:22px}
+.wide{width:100%}
+.stamps{background:var(--pink);color:#fff;border-radius:26px;padding:20px;position:relative;overflow:hidden}
+.stamps::after{content:"";position:absolute;inset:auto -30px -60px auto;width:160px;height:160px;border-radius:50%;background:var(--yellow);opacity:.35}
+.stamps .grid6{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:16px 0 12px;position:relative;z-index:1}
+.stamps .s{aspect-ratio:1;border-radius:50%;border:2px dashed rgba(255,255,255,.7);display:grid;place-items:center;font-size:16px}
+.stamps .s.on{background:#fff;color:var(--pink);border-style:solid;border-color:#fff;animation:stamp .4s ease-out both}
+.stamps .s.gift{border-color:var(--yellow)}
+@keyframes stamp{from{transform:scale(1.6) rotate(-20deg)}to{transform:none}}
+.stamps h3{font-family:var(--display);font-weight:400;font-size:20px;text-transform:uppercase;position:relative;z-index:1}
+.stamps p{position:relative;z-index:1}
+.ref{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--card);border:1.5px dashed var(--ink);border-radius:18px;padding:14px;margin-top:14px}
+.ref code{font-family:var(--display);font-size:16px}
+.bk{display:flex;justify-content:space-between;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:8px}
+.bk small{color:var(--muted);display:block;font-size:12px}
+.link{color:var(--pink);font-weight:700;font-size:13px}
+.empty{color:var(--muted);font-size:14px;padding:14px;text-align:center;background:var(--card);border-radius:16px;border:1px dashed var(--line)}
+.ok{text-align:center;padding:30px 0}
+.ok .big{font-family:var(--display);font-size:28px;text-transform:uppercase;margin:16px 0 6px}
+.demo{font-size:11px;color:var(--muted);text-align:center;margin-top:24px}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}.prog i.run b{width:100%}}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="pitch">
+    <span class="tag">Нейл бар · Студентски град</span>
+    <h1>Избери дизайн. <span>Ние</span> го рисуваме.</h1>
+    <p>Сайтът е приложение. Разглеждаш дизайни, запазваш точно този, който харесваш, и трупаш печати за безплатен маникюр.</p>
+    <ul>
+      <li><b>1</b>Свободни места в момента, на живо</li>
+      <li><b>2</b>Каталог с 10 дизайна и любими</li>
+      <li><b>3</b>Записване за 3 докосвания</li>
+      <li><b>4</b>Карта за лоялност: 6-ият маникюр е подарък</li>
+    </ul>
+    <p class="note">Демо сайт за портфолио. Барът, цените и екипът са измислени. Отвори от телефон и приложението заема целия екран.</p>
+  </div>
+  <div class="phone">
+    <div class="screen" id="screen">
+      <div class="bar"><div class="brand">НЕ<i>ОН</i></div><div class="loc">бл. 58, Студентски град<br><span id="clock"></span></div></div>
+      <div class="view" id="view"></div>
+      <nav class="tabs" id="tabs"></nav>
+      <div class="sheet-bg" id="sheetBg" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+      <div class="story-view" id="storyView" hidden></div>
+    </div>
+  </div>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+function el(tag,attrs,...kids){const e=document.createElement(tag);for(const k in attrs||{}){const v=attrs[k];if(k==="class")e.className=v;else if(k==="text")e.textContent=v;else if(k==="html")e.innerHTML=v;else if(k.startsWith("on"))e.addEventListener(k.slice(2),v);else if(v!==false&&v!=null)e.setAttribute(k,v===true?"":v)}for(const c of kids)if(c!=null)e.append(c);return e}
+const pad=n=>String(n).padStart(2,"0"),keyOf=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const parseKey=k=>{const[y,m,d]=k.split("-").map(Number);return new Date(y,m-1,d)};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const hm=m=>pad(Math.floor(m/60))+":"+pad(m%60);
+const fmt=(d,o)=>new Intl.DateTimeFormat("bg-BG",o).format(d);
+const nowMin=()=>{const n=new Date();return n.getHours()*60+n.getMinutes()};
+function hashStr(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let x=Math.imul(seed^seed>>>15,1|seed);x=x+Math.imul(x^x>>>7,61|x)^x;return((x^x>>>14)>>>0)/4294967296}}
+const LS=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
+const SV=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let bookings=LS("neon-bookings-v2",[]),likes=LS("neon-likes-v2",["chrome","cherry"]);
+const OPEN=600,CLOSE=1260;
+
+const BASES=[{id:"gel",n:"Маникюр с гел лак",d:60,p:28},{id:"ext",n:"Изграждане с гел",d:120,p:45},{id:"ped",n:"Педикюр с гел лак",d:75,p:36}];
+const tip=c=>`linear-gradient(to bottom,${c} 0 24%,transparent 24%),`;
+const D=[
+ {id:"milk",n:"Мляко с мед",f:"nude",x:0,t:0,bg:"linear-gradient(170deg,#F6E1D3,#E8C2AC)",d:"Полупрозрачен нюд с топъл подтон. Става за офис и за сватба."},
+ {id:"french",n:"Микро френски",f:"french",x:5,t:10,bg:tip("#fff")+"linear-gradient(#F5D0D6,#EDB8C2)",d:"Тънка бяла линия по ръба. Изглежда дълго и чисто."},
+ {id:"chrome",n:"Перлен хром",f:"chrome",x:8,t:10,bg:"linear-gradient(120deg,#F4E9F7,#C9B6D9 40%,#FFFFFF 50%,#B9A2CC 70%)",d:"Огледален ефект върху светла основа. Най-търсеният ни дизайн."},
+ {id:"cherry",n:"Черешов гланц",f:"color",x:0,t:0,bg:"radial-gradient(circle at 35% 25%,#FF7A9C,transparent 35%),linear-gradient(#C2123D,#7A0624)",d:"Наситено червено със стъклен гланц."},
+ {id:"cat",n:"Котешко око",f:"chrome",x:8,t:10,bg:"linear-gradient(100deg,transparent 40%,rgba(255,255,255,.75) 50%,transparent 60%),linear-gradient(#2B1F4A,#120A26)",d:"Магнитен гел с ивица светлина, която се мести."},
+ {id:"leaves",n:"Есенни листа",f:"art",x:12,t:20,bg:"radial-gradient(circle at 30% 40%,#E07A2E 0 14%,transparent 15%),radial-gradient(circle at 65% 65%,#B5541C 0 12%,transparent 13%),linear-gradient(#F3DFC6,#E7C9A5)",d:"Ръчно рисувани листа върху бежова основа."},
+ {id:"sunset",n:"Неонов залез",f:"art",x:10,t:15,bg:"linear-gradient(#FF2E93,#FF8A3D 60%,#FFD23F)",d:"Омбре от розово към жълто. Свети на UV светлина."},
+ {id:"ice",n:"Леден хром",f:"chrome",x:8,t:10,bg:"linear-gradient(130deg,#DDF3FF,#8FC9E8 45%,#FFFFFF 52%,#7BB5D6 75%)",d:"Студен син хром за зимата."},
+ {id:"dots",n:"Точки",f:"art",x:8,t:15,bg:"radial-gradient(circle,#1A0B33 0 22%,transparent 24%) 0 0/9px 9px,linear-gradient(#FFF,#F4ECF7)",d:"Минималистичен арт с черни точки."},
+ {id:"bordo",n:"Бордо мат",f:"color",x:3,t:5,bg:"linear-gradient(#6E1630,#4A0B1F)",d:"Тъмно бордо с матов топ. Сезонен хит."}
+];
+const FILTERS=[{id:"all",n:"Всички"},{id:"liked",n:"♥ Любими"},{id:"nude",n:"Нюд"},{id:"french",n:"Френски"},{id:"chrome",n:"Хром"},{id:"color",n:"Цвят"},{id:"art",n:"Арт"}];
+const PROS=[{id:"eli",n:"Ели",c:"#FF2E93"},{id:"sisi",n:"Сиси",c:"#7B5CFF"},{id:"dari",n:"Дари",c:"#2ED3A0"}];
+const STORIES=[
+ {n:"Нови цветове",bg:"linear-gradient(160deg,#FF2E93,#7B5CFF)",h:"12 нови цвята",p:"Пристигнаха есенните гел лакове. Бордо, шоколад и маслинено."},
+ {n:"Хром",bg:"linear-gradient(160deg,#C9B6D9,#5A4A7A)",h:"Хром на всичко",p:"Към всеки дизайн можеш да добавиш хромов топ за 8 €."},
+ {n:"Студенти",bg:"linear-gradient(160deg,#FFD23F,#FF8A3D)",h:"−15% със студентска",p:"От понеделник до четвъртък преди 14:00. Покажи книжката на място."},
+ {n:"Екипът",bg:"linear-gradient(160deg,#2ED3A0,#1A0B33)",h:"Ели, Сиси, Дари",p:"Три маникюристки, над 4000 маникюра общо. И една котка на рецепцията."}
+];
+const nails=(bg,lg)=>{const h=el("div",{class:"hand"+(lg?" lg":"")});[62,78,86,76,54].forEach(p=>{const i=el("i");i.style.height=p+"%";i.style.background=bg;h.append(i)});return h};
+
+/* availability */
+const cache={};
+function busy(pro,key){const ck=pro+key;if(cache[ck])return cache[ck];const r=rng(hashStr("neon"+ck)),out=[];let x=OPEN;
+  while(x<CLOSE){if(r()<.5){const d=[60,75,90,120][Math.floor(r()*4)];out.push([x,x+d]);x+=d}else x+=30}return cache[ck]=out}
+function proFree(pro,key,s,dur){if(s<OPEN||s+dur>CLOSE)return false;if(key===keyOf(new Date())&&s<nowMin()+20)return false;
+  const own=bookings.filter(b=>b.pro===pro&&b.date===key&&!b.cancelled).map(b=>[b.time,b.time+b.dur]);return!busy(pro,key).concat(own).some(([a,b])=>s<b&&a<s+dur)}
+function freeNow(){const k=keyOf(new Date()),n=nowMin();if(n<OPEN||n>=CLOSE-60)return null;
+  return PROS.filter(p=>!busy(p.id,k).concat(bookings.filter(b=>b.pro===p.id&&b.date===k&&!b.cancelled).map(b=>[b.time,b.time+b.dur])).some(([a,b])=>n<b&&a<=n))}
+
+/* state */
+const S={tab:"home",filter:"all",design:"chrome",base:"gel",pro:"any",date:keyOf(new Date()),time:null,name:"",phone:"",err:{},done:null,seen:[]};
+const dz=id=>D.find(d=>d.id===id),bz=id=>BASES.find(b=>b.id===id);
+const dur=()=>bz(S.base).d+(S.design?dz(S.design).t:0);
+const price=()=>bz(S.base).p+(S.design?dz(S.design).x:0);
+function slotPro(key,t){const list=S.pro==="any"?PROS:PROS.filter(p=>p.id===S.pro);return list.find(p=>proFree(p.id,key,t,dur()))}
+const stampCount=()=>3+bookings.filter(b=>!b.cancelled).length;
+
+const ICONS={home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',designs:'<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/>',
+ book:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>',card:'<rect x="3" y="6" width="18" height="13" rx="3"/><circle cx="9" cy="12.5" r="2"/><path d="M14 11h4M14 14h3"/>'};
+const TABN={home:"Начало",designs:"Дизайни",book:"Запис",card:"Карта"};
+function renderTabs(){const t=$("#tabs");t.replaceChildren();Object.keys(TABN).forEach(k=>{const b=el("button",{"aria-current":S.tab===k?"page":false,onclick:()=>go(k)},
+  el("span",{html:'<svg viewBox="0 0 24 24">'+ICONS[k]+'</svg>'}),el("span",{text:TABN[k]}));
+  if(k==="card"){const n=bookings.filter(b=>!b.cancelled&&b.date>=keyOf(new Date())).length;if(n)b.prepend(el("span",{class:"badge",text:String(n)}))}t.append(b)})}
+function go(tab){S.tab=tab;if(tab!=="book")S.done=null;render();$("#view").scrollTop=0}
+
+function viewHome(v){const fn=freeNow();const live=el("div",{class:"live"+(fn?"":" closed")});
+  if(fn){live.append(el("div",{class:"row"},el("span",{class:"pulse",text:"На живо"}),el("span",{style:"font-size:12px;opacity:.8;position:relative;z-index:1",text:"до "+hm(CLOSE)})),
+    el("div",{class:"big",text:fn.length?fn.length+" "+(fn.length===1?"свободно място":"свободни места"):"Всички са заети"}),
+    el("p",{text:fn.length?"Можеш да дойдеш веднага, без чакане.":"Най-близкият свободен час е след малко. Запази го."}),
+    el("div",{class:"row",style:"margin-top:14px"},el("button",{class:"go",text:fn.length?"Идвам сега":"Най-близък час",onclick:()=>{S.date=keyOf(new Date());S.time=null;go("book")}})))}
+  else{const n=nowMin();live.append(el("span",{class:"pulse",text:"Затворено"}),el("div",{class:"big",text:"Отваряме в "+hm(OPEN)}),el("p",{text:n<OPEN?"Днес. Можеш да си запазиш час още сега.":"Утре. Можеш да си запазиш час още сега."}),
+    el("div",{class:"row",style:"margin-top:14px"},el("button",{class:"go",text:"Запази за "+(n<OPEN?"днес":"утре"),onclick:()=>{S.date=keyOf(addDays(new Date(),n<OPEN?0:1));S.time=null;go("book")}})))}
+  v.append(live);
+  const st=el("div",{class:"stories"});STORIES.forEach((s,i)=>{const b=el("button",{class:"story"+(S.seen.includes(i)?" seen":""),onclick:()=>openStory(i)},el("span",{class:"ring"},el("i")),el("span",{text:s.n}));b.querySelector("i").style.background=s.bg;st.append(b)});v.append(st);
+  v.append(el("div",{class:"h",text:"Топ тази седмица"}));const hs=el("div",{class:"hscroll"});["chrome","cherry","french","cat","sunset"].forEach(id=>hs.append(dcard(dz(id))));v.append(hs);
+  v.append(el("div",{class:"h",text:"Цени"}));BASES.forEach(b=>v.append(el("button",{class:"opt",onclick:()=>{S.base=b.id;go("book")}},el("div",{},el("b",{text:b.n}),el("small",{text:b.d+" мин · дизайнът се доплаща"})),el("b",{text:b.p+" €"}))));
+  v.append(el("p",{class:"demo",text:"Демо сайт за портфолио. Барът, цените и екипът са измислени."}))}
+
+function dcard(d){const c=el("button",{class:"dcard",onclick:()=>openDesign(d.id)});const h=nails(d.bg);
+  h.append(el("span",{class:"heart","aria-pressed":String(likes.includes(d.id)),"aria-label":"Харесай",text:"♥",role:"button",tabindex:"0",onclick:e=>{e.stopPropagation();toggleLike(d.id)}}));
+  c.append(h,el("b",{text:d.n}),el("small",{text:d.x?"+"+d.x+" € · +"+d.t+" мин":"без доплащане"}));return c}
+function toggleLike(id){likes=likes.includes(id)?likes.filter(x=>x!==id):likes.concat(id);SV("neon-likes-v2",likes);render()}
+
+function viewDesigns(v){v.append(el("div",{class:"h",text:"Дизайни",style:"margin-top:8px"}));const ch=el("div",{class:"chips"});
+  FILTERS.forEach(f=>ch.append(el("button",{class:"chip","aria-pressed":String(S.filter===f.id),text:f.n,onclick:()=>{S.filter=f.id;render()}})));v.append(ch);
+  const list=D.filter(d=>S.filter==="all"||(S.filter==="liked"?likes.includes(d.id):d.f===S.filter));
+  if(!list.length){v.append(el("div",{class:"empty",style:"margin-top:12px",text:"Още нямаш любими. Натисни ♥ върху дизайн, за да го запазиш тук."}));return}
+  const g=el("div",{class:"grid",style:"margin-top:12px"});list.forEach(d=>g.append(dcard(d)));v.append(g)}
+
+function openDesign(id){const d=dz(id);const sh=$("#sheet");sh.replaceChildren();
+  sh.append(el("div",{class:"grab"}),nails(d.bg,true),el("h3",{text:d.n}),el("p",{style:"color:var(--muted)",text:d.d}),
+    el("div",{class:"facts"},el("span",{text:d.x?"+"+d.x+" € към маникюра":"Без доплащане"}),el("span",{text:"+"+d.t+" мин"}),el("span",{text:"Издържа 3–4 седмици"})),
+    el("button",{class:"go wide",text:"Искам този дизайн",onclick:()=>{S.design=id;S.time=null;closeSheet();go("book")}}),
+    el("button",{class:"wide",style:"margin-top:10px;padding:10px;font-weight:600;color:var(--muted)",text:likes.includes(id)?"♥ В любими":"♡ Добави в любими",onclick:()=>{toggleLike(id);openDesign(id)}}));
+  $("#sheetBg").hidden=false}
+function closeSheet(){$("#sheetBg").hidden=true}
+$("#sheetBg").addEventListener("click",e=>{if(e.target.id==="sheetBg")closeSheet()});
+
+let storyTimer=null;
+function openStory(i){clearTimeout(storyTimer);const s=STORIES[i];if(!S.seen.includes(i))S.seen.push(i);const v=$("#storyView");v.replaceChildren();v.style.background=s.bg;
+  const prog=el("div",{class:"prog"});STORIES.forEach((_,j)=>prog.append(el("i",{class:j<i?"done":j===i?"run":""},el("b"))));
+  v.append(prog,el("div",{style:"display:flex;justify-content:space-between;margin-top:12px;font-weight:700"},el("span",{text:"НЕОН · "+s.n}),el("button",{"aria-label":"Затвори",style:"color:#fff;font-size:22px",text:"×",onclick:closeStory})),
+    el("h2",{text:s.h}),el("p",{text:s.p}),el("button",{class:"go y",text:i<STORIES.length-1?"Следваща":"Към дизайните",onclick:()=>i<STORIES.length-1?openStory(i+1):(closeStory(),go("designs"))}));
+  v.hidden=false;if(!matchMedia("(prefers-reduced-motion: reduce)").matches)storyTimer=setTimeout(()=>i<STORIES.length-1?openStory(i+1):closeStory(),4000)}
+function closeStory(){clearTimeout(storyTimer);$("#storyView").hidden=true;render()}
+
+function viewBook(v){
+  if(S.done){const b=S.done,d=parseKey(b.date),c=stampCount();v.append(el("div",{class:"ok"},nails(b.design?dz(b.design).bg:"linear-gradient(#F6E1D3,#E8C2AC)",true),
+    el("div",{class:"big",text:"Запазено!"}),el("p",{text:fmt(d,{weekday:"long",day:"numeric",month:"long"})+", "+hm(b.time)}),
+    el("p",{style:"color:var(--muted);margin-top:4px",text:(b.design?dz(b.design).n+" · ":"")+PROS.find(p=>p.id===b.pro).n+" · "+b.price+" €"}),
+    el("p",{style:"margin:16px 0;font-weight:700;color:var(--pink)",text:"+1 печат в картата. Остават "+Math.max(0,6-(c%6||6))+" до подарък."}),
+    el("button",{class:"go",text:"Виж картата",onclick:()=>go("card")})));return}
+  v.append(el("div",{class:"h",text:"Запис",style:"margin-top:8px"}));
+  if(S.design){const d=dz(S.design);v.append(el("div",{class:"picked"},nails(d.bg),el("div",{class:"grow"},el("b",{text:d.n}),el("div",{style:"font-size:12px;color:var(--muted)",text:d.x?"+"+d.x+" € · +"+d.t+" мин":"без доплащане"})),
+    el("button",{class:"link",text:"Смени",onclick:()=>go("designs")})))}
+  else v.append(el("button",{class:"opt",onclick:()=>go("designs")},el("div",{},el("b",{text:"Без дизайн, само цвят"}),el("small",{text:"Натисни, за да избереш дизайн"})),el("span",{class:"link",text:"Дизайни →"})));
+  if(S.design)v.append(el("button",{class:"link",style:"margin:8px 0 0",text:"Махни дизайна, искам само цвят",onclick:()=>{S.design=null;S.time=null;render()}}));
+  v.append(el("div",{class:"h",text:"Услуга"}));BASES.forEach(b=>v.append(el("button",{class:"opt","aria-pressed":String(S.base===b.id),onclick:()=>{S.base=b.id;S.time=null;render()}},el("div",{},el("b",{text:b.n}),el("small",{text:b.d+" мин"})),el("b",{text:b.p+" €"}))));
+  v.append(el("div",{class:"h",text:"При кого"}));const pr=el("div",{class:"pros"});
+  [{id:"any",n:"Всяка",c:"#1A0B33"}].concat(PROS).forEach(p=>pr.append(el("button",{class:"pro","aria-pressed":String(S.pro===p.id),onclick:()=>{S.pro=p.id;S.time=null;render()}},(()=>{const i=el("i",{text:p.id==="any"?"★":p.n[0]});i.style.background=p.c;return i})(),el("span",{text:p.n}))));v.append(pr);
+  v.append(el("div",{class:"h",text:"Кога"}));const ds=el("div",{class:"dstrip"});
+  for(let i=0;i<10;i++){const d=addDays(new Date(),i),k=keyOf(d);ds.append(el("button",{class:"dpill","aria-pressed":String(S.date===k),onclick:()=>{S.date=k;S.time=null;render()}},el("span",{text:i===0?"днес":i===1?"утре":fmt(d,{weekday:"short"})}),el("b",{text:String(d.getDate())})))}
+  v.append(ds);const tm=el("div",{class:"times",style:"margin-top:12px"});let any=false;
+  for(let t=OPEN;t+dur()<=CLOSE;t+=30){const ok=!!slotPro(S.date,t);if(ok)any=true;tm.append(el("button",{class:"time",disabled:!ok,"aria-pressed":String(S.time===t),text:hm(t),onclick:()=>{S.time=t;render();setTimeout(()=>{const f=$("#nName");if(f)f.scrollIntoView({behavior:"smooth",block:"center"})},30)}}))}
+  v.append(any?tm:el("div",{class:"empty",style:"margin-top:12px",text:"Няма свободни часове този ден. Избери друг ден."}));
+  if(S.time!=null){const f=(id,l,i,e)=>el("div",{class:"field"},el("label",{for:id,text:l}),i,e?el("span",{class:"err",text:e}):null);
+    v.append(el("div",{class:"h",text:"Ти"}),f("nName","Име",el("input",{id:"nName",autocomplete:"name",value:S.name,oninput:e=>S.name=e.target.value}),S.err.name),
+      f("nPhone","Телефон",el("input",{id:"nPhone",type:"tel",inputmode:"tel",placeholder:"0888 123 456",value:S.phone,oninput:e=>S.phone=e.target.value}),S.err.phone))}
+  v.append(el("div",{class:"total"},el("div",{},el("div",{style:"font-size:12px;color:var(--muted);font-weight:600",text:dur()+" мин"}),el("b",{text:price()+" €"})),
+    el("button",{class:"go",disabled:S.time==null,text:S.time==null?"Избери час":"Запази "+hm(S.time),onclick:confirm})))}
+
+function confirm(){const e={};if(S.name.trim().length<2)e.name="Въведи име.";if(!/^(\+359\d{8,9}|0\d{8,9})$/.test(S.phone.replace(/[^\d+]/g,"")))e.phone="Въведи български номер, напр. 0888 123 456.";
+  S.err=e;if(Object.keys(e).length){render();return}const p=slotPro(S.date,S.time);if(!p){S.time=null;render();return}
+  const b={id:Math.random().toString(36).slice(2,7),date:S.date,time:S.time,dur:dur(),price:price(),base:S.base,design:S.design,pro:p.id,name:S.name.trim(),phone:S.phone.trim()};
+  bookings.push(b);SV("neon-bookings-v2",bookings);S.done=b;S.time=null;render();$("#view").scrollTop=0}
+
+function viewCard(v){const c=stampCount(),inCycle=c%6===0?6:c%6;
+  const card=el("div",{class:"stamps",style:"margin-top:8px"},el("h3",{text:"Карта Неон"}),el("p",{style:"opacity:.9;font-size:14px",text:inCycle>=6?"Следващият маникюр е подарък!":"Още "+(6-inCycle)+" до безплатен маникюр"}));
+  const g=el("div",{class:"grid6"});for(let i=1;i<=6;i++)g.append(el("span",{class:"s"+(i<=inCycle?" on":"")+(i===6?" gift":""),text:i<=inCycle?"★":i===6?"🎁":""}));card.append(g);
+  card.append(el("p",{style:"font-size:12px;opacity:.85",text:"Всеки маникюр е печат. Демо картата започва с 3 печата."}));v.append(card);
+  const code="NEON-"+(LS("neon-ref",null)||(()=>{const r=Math.random().toString(36).slice(2,6).toUpperCase();SV("neon-ref",r);return r})());
+  v.append(el("div",{class:"ref"},el("div",{},el("div",{style:"font-size:12px;color:var(--muted);font-weight:600",text:"Покани приятелка, и двете получавате −5 €"}),el("code",{text:code})),
+    el("button",{class:"go y",text:"Копирай",onclick:async e=>{try{await navigator.clipboard.writeText(code);e.target.textContent="Копирано"}catch(err){e.target.textContent="Неуспешно"}}})));
+  v.append(el("div",{class:"h",text:"Моите часове"}));const mine=bookings.filter(b=>!b.cancelled).sort((a,b)=>(a.date+hm(a.time)).localeCompare(b.date+hm(b.time)));
+  if(!mine.length)v.append(el("div",{class:"empty",text:"Още нямаш запазени часове."}));
+  mine.forEach(b=>v.append(el("div",{class:"bk"},el("div",{},el("b",{text:fmt(parseKey(b.date),{weekday:"short",day:"numeric",month:"short"})+", "+hm(b.time)}),
+    el("small",{text:(b.design?dz(b.design).n+" · ":"")+bz(b.base).n+" · "+PROS.find(p=>p.id===b.pro).n+" · "+b.price+" €"})),
+    el("button",{class:"link",text:"Отмени",onclick:()=>{b.cancelled=true;SV("neon-bookings-v2",bookings);render()}}))));
+  v.append(el("p",{class:"demo",text:"Отмяната е безплатна до 3 часа преди часа."}))}
+
+function render(){const v=$("#view");v.replaceChildren();({home:viewHome,designs:viewDesigns,book:viewBook,card:viewCard})[S.tab](v);renderTabs()}
+function tick(){$("#clock").textContent="10:00 – 21:00 всеки ден"}
+tick();render();
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSheet();if(!$("#storyView").hidden)closeStory()}});
+</script>
+</body>
+</html>
